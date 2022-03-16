@@ -21,7 +21,7 @@ torch-spline-conv     1.2.1
 torch-quiver          0.1.1
 ```
 
-# DGL
+## DGL
 
 ```
 dgl-cu102             0.8.0
