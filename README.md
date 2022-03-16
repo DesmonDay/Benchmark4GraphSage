@@ -7,7 +7,7 @@
 - Dataset: Reddit
 - Model: GraphSage, [25, 10]
 
-命令：python xxx.py --batch_size 1024 --epocs 20 --mode uva
+命令：python xxx.py --batch_size 1024 --epochs 20 --mode uva
 
 ## Pyg
 
