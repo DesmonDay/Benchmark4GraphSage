@@ -50,7 +50,7 @@ def main(args):
     opt = torch.optim.Adam(model.parameters(), lr=0.01)
 
     sampler = dgl.dataloading.NeighborSampler(
-            [25, 10], prefetch_node_feats=['feat'], prefetch_labels=['label'])
+            [10, 25], prefetch_node_feats=['feat'], prefetch_labels=['label'])
     use_uva = args.mode == "uva"
     train_dataloader = dgl.dataloading.DataLoader(
             graph, train_idx, sampler, device=device, batch_size=args.batch_size, shuffle=True,
