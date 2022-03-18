@@ -9,6 +9,7 @@ import paddle.nn.functional as F
 from paddle.io import Dataset, DataLoader
 import pgl
 import pgl.graph_kernel as graph_kernel
+from graphsageconv2 import GraphSageConv2
 
 
 class ShardedDataset(Dataset):
@@ -30,13 +31,13 @@ class GraphSage(nn.Layer):
 
         self.num_layers = 2
         self.convs = nn.LayerList()
-        self.convs.append(pgl.nn.GraphSageConv2(input_size, hidden_size))
-        self.convs.append(pgl.nn.GraphSageConv2(hidden_size, num_classes))
+        self.convs.append(GraphSageConv2(input_size, hidden_size))
+        self.convs.append(GraphSageConv2(hidden_size, num_classes))
 
     def forward(self, graph_list, feat):
-        for i, (graph, size) in enumerate(graph_list):
+        for i, (edge_src, edge_dst, size) in enumerate(graph_list):
             feat_target = feat[:size]
-            feat = self.convs[i](graph, (feat, feat_target))
+            feat = self.convs[i]((edge_src, edge_dst), (feat, feat_target))
             if i != self.num_layers - 1:
                 feat = F.relu(feat)
                 feat = F.dropout(feat, p=0.5)
@@ -84,11 +85,7 @@ def get_sample_graph_list(row, colptr, nodes, sample_sizes):
             row, colptr, nodes, "sample_size", size)
         edge_src, edge_dst, sample_index = core.ops.graph_reindex(
             neighbors, neighbor_counts, nodes)
-        graph = pgl.Graph(num_nodes=len(sample_index),
-                          edges=paddle.concat([edge_src.reshape([-1, 1]),
-                                              edge_dst.reshape([-1, 1])],
-                                              axis=-1))
-        graph_list.append((graph, nodes.shape[0]))
+        graph_list.append((edge_src, edge_dst, nodes.shape[0]))
         nodes = sample_index
     return graph_list[::-1], nodes
 
