@@ -9,7 +9,7 @@ from pgl.nn import functional as GF
 
 
 class GraphSageConv2(nn.Layer):
-    def __init__(self, input_size, hidden_size, normalize=False, pool_type="sum"):
+    def __init__(self, input_size, hidden_size, normalize=False, pool_type="mean"):
         super(GraphSageConv2, self).__init__()
         self.pool_type = pool_type
         self.normalize = normalize
